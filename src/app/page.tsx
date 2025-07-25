@@ -1,6 +1,11 @@
 "use client";
 
-import { useAuthModal, useAccount, useSolanaSigner, useSolanaTransaction } from "@account-kit/react";
+import {
+  useAuthModal,
+  useAccount,
+  useSolanaSigner,
+  useSolanaTransaction,
+} from "@account-kit/react";
 import { useState } from "react";
 
 export default function Home() {
@@ -23,54 +28,64 @@ export default function Home() {
   };
 
   return (
-    <main className="container">
-      <h1 className="text-4xl font-bold mb-8 text-center">Solana Tipper</h1>
-      {isConnected && signer ? (
-        <div className="flex flex-col gap-4 bg-gray-100 p-8 rounded-lg">
-          <p className="text-xl font-semibold">Welcome!</p>
-          <p>Your Solana address is: <span className="font-mono bg-gray-200 px-2 py-1 rounded">{signer.address}</span></p>
-          <input
-            type="text"
-            placeholder="Recipient Address"
-            value={toAddress}
-            onChange={(e) => setToAddress(e.target.value)}
-            className="border p-2 rounded"
-          />
-          <input
-            type="number"
-            placeholder="Amount (in lamports)"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="border p-2 rounded"
-          />
-          <button
-            onClick={handleSend}
-            disabled={isPending}
-            className="rounded-full bg-blue-500 px-8 py-3 text-white disabled:bg-gray-400 hover:bg-blue-600 transition-colors"
-          >
-            {isPending ? "Sending..." : "Send Tip"}
-          </button>
-          {data?.hash && (
-            <a
-              href={`https://explorer.solana.com/tx/${data.hash}?cluster=devnet`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 underline text-center"
-            >
-              View transaction
-            </a>
-          )}
-        </div>
-      ) : (
-        <div className="flex justify-center">
+    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+        <h1 className="text-3xl font-bold text-center text-gray-900">
+          Solana Tipper
+        </h1>
+        {isConnected && signer ? (
+          <div className="space-y-4">
+            <p className="text-center text-gray-600">
+              Your Solana address:{" "}
+              <span className="font-mono bg-gray-100 px-2 py-1 rounded">
+                {signer.address}
+              </span>
+            </p>
+            <div className="flex flex-col gap-4">
+              <input
+                type="text"
+                placeholder="Recipient Address"
+                value={toAddress}
+                onChange={(e) => setToAddress(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Amount (in lamports)"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
             <button
-            onClick={openAuthModal}
-            className="rounded-full bg-blue-500 px-8 py-3 text-white hover:bg-blue-600 transition-colors"
+              onClick={handleSend}
+              disabled={isPending}
+              className="w-full py-2 px-4 font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-            Login
+              {isPending ? "Sending..." : "Send Tip"}
             </button>
-        </div>
-      )}
+            {data?.hash && (
+              <a
+                href={`https://explorer.solana.com/tx/${data.hash}?cluster=devnet`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-center text-blue-600 hover:underline"
+              >
+                View transaction
+              </a>
+            )}
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <button
+              onClick={openAuthModal}
+              className="py-2 px-4 font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Login to Get Started
+            </button>
+          </div>
+        )}
+      </div>
     </main>
   );
 }
