@@ -1,75 +1,36 @@
 "use client";
-
-import { useAuthModal, useAccount, useSolanaSigner, useSolanaTransaction } from "@account-kit/react";
-import { useState } from "react";
+import {
+  useAuthModal,
+  useLogout,
+  useSignerStatus,
+  useUser,
+} from "@account-kit/react";
 
 export default function Home() {
+  const user = useUser();
   const { openAuthModal } = useAuthModal();
-  const { isConnected } = useAccount();
-  const signer = useSolanaSigner();
-  const { sendTransaction, isPending, data } = useSolanaTransaction({});
-  const [toAddress, setToAddress] = useState("");
-  const [amount, setAmount] = useState("");
-
-  const handleSend = () => {
-    if (!toAddress || !amount) return;
-
-    sendTransaction({
-      transfer: {
-        toAddress,
-        amount: parseInt(amount),
-      },
-    });
-  };
+  const signerStatus = useSignerStatus();
+  const { logout } = useLogout();
 
   return (
-    <main className="container">
-      <h1 className="text-4xl font-bold mb-8 text-center">Solana Tipper</h1>
-      {isConnected && signer ? (
-        <div className="flex flex-col gap-4 bg-gray-100 p-8 rounded-lg">
-          <p className="text-xl font-semibold">Welcome!</p>
-          <p>Your Solana address is: <span className="font-mono bg-gray-200 px-2 py-1 rounded">{signer.address}</span></p>
-          <input
-            type="text"
-            placeholder="Recipient Address"
-            value={toAddress}
-            onChange={(e) => setToAddress(e.target.value)}
-            className="border p-2 rounded"
-          />
-          <input
-            type="number"
-            placeholder="Amount (in lamports)"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="border p-2 rounded"
-          />
+    <main className="flex min-h-screen flex-col items-center p-24 gap-4 justify-center text-center">
+      {signerStatus.isInitializing ? (
+        <>Loading...</>
+      ) : user ? (
+        <div className="flex flex-col gap-2 p-2">
+          <p className="text-xl font-bold">Success!</p>
+          You&apos;re logged in as {user.email ?? "anon"}.
           <button
-            onClick={handleSend}
-            disabled={isPending}
-            className="rounded-full bg-blue-500 px-8 py-3 text-white disabled:bg-gray-400 hover:bg-blue-600 transition-colors"
+            className="akui-btn akui-btn-primary mt-6"
+            onClick={() => logout()}
           >
-            {isPending ? "Sending..." : "Send Tip"}
+            Log out
           </button>
-          {data?.hash && (
-            <a
-              href={`https://explorer.solana.com/tx/${data.hash}?cluster=devnet`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 underline text-center"
-            >
-              View transaction
-            </a>
-          )}
         </div>
       ) : (
-        <div className="flex justify-center">
-            <button
-            onClick={openAuthModal}
-            className="rounded-full bg-blue-500 px-8 py-3 text-white hover:bg-blue-600 transition-colors"
-            >
-            Login
-            </button>
-        </div>
+        <button className="akui-btn akui-btn-primary" onClick={openAuthModal}>
+          Login
+        </button>
       )}
     </main>
   );
